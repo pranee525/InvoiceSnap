@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Invoice Scanner",
+    "slug": "invoice-scanner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "invoicescanner",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Scan invoices to extract product data",
+        "NSPhotoLibraryUsageDescription": "Select invoice photos to scan"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#000"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": ["android.permission.CAMERA", "android.permission.READ_EXTERNAL_STORAGE"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Invoice Scanner to access your camera to scan invoices"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Invoice Scanner to access your photos to select invoices"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#000"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
