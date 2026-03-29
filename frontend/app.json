@@ -1,24 +1,26 @@
 {
   "expo": {
-    "name": "Invoice Scanner",
-    "slug": "invoice-scanner",
+    "name": "MedExTracker",
+    "slug": "medextracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "invoicescanner",
+    "scheme": "medextracker",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.medextracker.app",
       "infoPlist": {
-        "NSCameraUsageDescription": "Scan invoices to extract product data",
+        "NSCameraUsageDescription": "Scan invoices to extract medicine data",
         "NSPhotoLibraryUsageDescription": "Select invoice photos to scan"
       }
     },
     "android": {
+      "package": "com.medextracker.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000"
+        "backgroundColor": "#0f172a"
       },
       "edgeToEdgeEnabled": true,
       "permissions": ["android.permission.CAMERA", "android.permission.READ_EXTERNAL_STORAGE"]
@@ -33,13 +35,13 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow Invoice Scanner to access your camera to scan invoices"
+          "cameraPermission": "Allow MedExTracker to access your camera to scan invoices"
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow Invoice Scanner to access your photos to select invoices"
+          "photosPermission": "Allow MedExTracker to access your photos to select invoices"
         }
       ],
       [
@@ -48,7 +50,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#000"
+          "backgroundColor": "#0f172a"
         }
       ]
     ],

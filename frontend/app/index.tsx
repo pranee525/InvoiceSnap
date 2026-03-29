@@ -7,11 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
-
 export default function Index() {
   const router = useRouter();
-  const { user, loading, login, isAuthenticated } = useAuth();
+  const { user, loading, login, isAuthenticated, isVerified } = useAuth();
   const insets = useSafeAreaInsets();
   const [isLoggingIn, setIsLoggingIn] = React.useState(false);
 
@@ -44,12 +42,16 @@ export default function Index() {
     return () => subscription.remove();
   }, [login]);
 
-  // Redirect if authenticated
+  // Redirect based on auth and verification status
   useEffect(() => {
-    if (isAuthenticated && !loading) {
-      router.replace('/(tabs)');
+    if (!loading && isAuthenticated) {
+      if (isVerified) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/verify');
+      }
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, isVerified, loading, router]);
 
   const handleGoogleLogin = async () => {
     // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
@@ -82,7 +84,7 @@ export default function Index() {
   if (loading || isLoggingIn) {
     return (
       <View style={[styles.container, { paddingTop: insets.top }]}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color="#22c55e" />
         <Text style={styles.loadingText}>
           {isLoggingIn ? 'Signing you in...' : 'Loading...'}
         </Text>
@@ -93,34 +95,56 @@ export default function Index() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.content}>
-        <View style={styles.iconContainer}>
-          <Ionicons name="receipt" size={80} color="#3b82f6" />
+        <View style={styles.logoContainer}>
+          <View style={styles.iconContainer}>
+            <Ionicons name="medical" size={50} color="#22c55e" />
+          </View>
+          <Text style={styles.brandName}>MedEx</Text>
+          <Text style={styles.brandSuffix}>Tracker</Text>
         </View>
         
-        <Text style={styles.title}>Invoice Scanner</Text>
-        <Text style={styles.subtitle}>
-          Scan pharmaceutical invoices, track medicine expiry dates, and generate billing reports
+        <Text style={styles.tagline}>
+          Medicine Expiry & Invoice Tracker
         </Text>
 
         <View style={styles.features}>
           <View style={styles.featureItem}>
-            <Ionicons name="camera" size={24} color="#22c55e" />
-            <Text style={styles.featureText}>Scan & Extract Data</Text>
+            <View style={[styles.featureIcon, { backgroundColor: '#052e16' }]}>
+              <Ionicons name="scan" size={22} color="#22c55e" />
+            </View>
+            <View style={styles.featureText}>
+              <Text style={styles.featureTitle}>AI Invoice Scanning</Text>
+              <Text style={styles.featureDesc}>Extract data instantly from photos</Text>
+            </View>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="alarm" size={24} color="#f59e0b" />
-            <Text style={styles.featureText}>Expiry Reminders</Text>
+            <View style={[styles.featureIcon, { backgroundColor: '#422006' }]}>
+              <Ionicons name="alarm" size={22} color="#f59e0b" />
+            </View>
+            <View style={styles.featureText}>
+              <Text style={styles.featureTitle}>Expiry Reminders</Text>
+              <Text style={styles.featureDesc}>Never miss expiring medicines</Text>
+            </View>
           </View>
           <View style={styles.featureItem}>
-            <Ionicons name="bar-chart" size={24} color="#8b5cf6" />
-            <Text style={styles.featureText}>Billing Reports</Text>
+            <View style={[styles.featureIcon, { backgroundColor: '#1e1b4b' }]}>
+              <Ionicons name="stats-chart" size={22} color="#8b5cf6" />
+            </View>
+            <View style={styles.featureText}>
+              <Text style={styles.featureTitle}>Billing Reports</Text>
+              <Text style={styles.featureDesc}>Track purchases by shop & date</Text>
+            </View>
           </View>
         </View>
 
         <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
-          <Ionicons name="logo-google" size={24} color="#fff" />
+          <Ionicons name="logo-google" size={22} color="#fff" />
           <Text style={styles.googleButtonText}>Continue with Google</Text>
         </TouchableOpacity>
+
+        <Text style={styles.footerText}>
+          By continuing, you agree to our Terms of Service
+        </Text>
       </View>
     </View>
   );
@@ -139,28 +163,34 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     width: '100%',
   },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   iconContainer: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: '#1e293b',
+    width: 70,
+    height: 70,
+    borderRadius: 20,
+    backgroundColor: '#052e16',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginRight: 12,
   },
-  title: {
-    fontSize: 32,
+  brandName: {
+    fontSize: 42,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 12,
-    textAlign: 'center',
+    color: '#22c55e',
   },
-  subtitle: {
+  brandSuffix: {
+    fontSize: 42,
+    fontWeight: '300',
+    color: '#fff',
+  },
+  tagline: {
     fontSize: 16,
-    color: '#94a3b8',
-    textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
+    color: '#64748b',
+    marginBottom: 40,
   },
   features: {
     width: '100%',
@@ -169,36 +199,58 @@ const styles = StyleSheet.create({
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
     backgroundColor: '#1e293b',
-    borderRadius: 12,
+    borderRadius: 14,
     marginBottom: 12,
   },
+  featureIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   featureText: {
-    color: '#e2e8f0',
+    marginLeft: 14,
+    flex: 1,
+  },
+  featureTitle: {
+    color: '#fff',
     fontSize: 16,
-    marginLeft: 12,
+    fontWeight: '600',
+  },
+  featureDesc: {
+    color: '#64748b',
+    fontSize: 13,
+    marginTop: 2,
   },
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#22c55e',
     paddingVertical: 16,
     paddingHorizontal: 32,
-    borderRadius: 12,
+    borderRadius: 14,
     width: '100%',
   },
   googleButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
-    marginLeft: 12,
+    marginLeft: 10,
   },
   loadingText: {
     color: '#94a3b8',
     marginTop: 16,
     fontSize: 16,
+  },
+  footerText: {
+    color: '#475569',
+    fontSize: 12,
+    marginTop: 20,
+    textAlign: 'center',
   },
 });

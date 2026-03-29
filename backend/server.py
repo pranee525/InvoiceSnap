@@ -23,6 +23,9 @@ db = client[os.environ.get('DB_NAME', 'test_database')]
 # Emergent LLM Key
 EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY', '')
 
+# Access Code for app access control
+ACCESS_CODE = os.environ.get('ACCESS_CODE', 'MEDEX2025')
+
 # Create the main app
 app = FastAPI()
 
@@ -43,6 +46,7 @@ class User(BaseModel):
     email: str
     name: str
     picture: Optional[str] = None
+    is_verified: bool = False  # Whether user has entered valid access code
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class SessionData(BaseModel):
@@ -244,6 +248,34 @@ async def logout(request: Request, response: Response):
     )
     
     return {"message": "Logged out"}
+
+# ==================== ACCESS CODE VERIFICATION ====================
+
+class AccessCodeRequest(BaseModel):
+    code: str
+
+@api_router.post("/auth/verify-code")
+async def verify_access_code(request: AccessCodeRequest, user: User = Depends(get_current_user)):
+    """Verify access code and mark user as verified"""
+    if request.code.upper() != ACCESS_CODE.upper():
+        raise HTTPException(status_code=400, detail="Invalid access code")
+    
+    # Update user as verified
+    await db.users.update_one(
+        {"user_id": user.user_id},
+        {"$set": {"is_verified": True}}
+    )
+    
+    return {"message": "Access code verified successfully", "is_verified": True}
+
+@api_router.get("/auth/verification-status")
+async def get_verification_status(user: User = Depends(get_current_user)):
+    """Check if current user has verified access code"""
+    user_doc = await db.users.find_one(
+        {"user_id": user.user_id},
+        {"_id": 0, "is_verified": 1}
+    )
+    return {"is_verified": user_doc.get("is_verified", False) if user_doc else False}
 
 # ==================== OCR HELPER ====================
 

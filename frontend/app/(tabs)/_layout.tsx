@@ -7,24 +7,28 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 
 export default function TabLayout() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, isVerified, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      router.replace('/');
+    if (!loading) {
+      if (!isAuthenticated) {
+        router.replace('/');
+      } else if (!isVerified) {
+        router.replace('/verify');
+      }
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, isVerified, loading, router]);
 
   if (loading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color="#22c55e" />
       </View>
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !isVerified) {
     return null;
   }
 
@@ -39,7 +43,7 @@ export default function TabLayout() {
           paddingBottom: 8,
           paddingTop: 8,
         },
-        tabBarActiveTintColor: '#3b82f6',
+        tabBarActiveTintColor: '#22c55e',
         tabBarInactiveTintColor: '#64748b',
         tabBarLabelStyle: {
           fontSize: 12,
