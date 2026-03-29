@@ -341,13 +341,13 @@ Important:
     if "," in image_base64:
         image_base64 = image_base64.split(",")[1]
     
-    # Create image content
+    # Create image content - using ImageContent with image_base64 parameter
     image_content = ImageContent(image_base64=image_base64)
     
-    # Send message with image
+    # Send message with image - use file_contents parameter as per playbook
     user_message = UserMessage(
         text="Extract all data from this pharmaceutical invoice. Return ONLY the JSON, no other text.",
-        image_contents=[image_content]
+        file_contents=[image_content]
     )
     
     response = await chat.send_message(user_message)
