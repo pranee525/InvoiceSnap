@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, ScrollView, Image, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { Camera, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { scanInvoice } from '../../src/services/api';
 import { useRouter } from 'expo-router';
@@ -24,7 +24,7 @@ interface ScanResult {
 export default function ScanScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const cameraRef = useRef<CameraView>(null);
+  const cameraRef = useRef<Camera>(null);
   const [permission, requestPermission] = useCameraPermissions();
   const [showCamera, setShowCamera] = useState(false);
   const [scanning, setScanning] = useState(false);
@@ -112,10 +112,10 @@ export default function ScanScreen() {
   if (showCamera) {
     return (
       <View style={styles.cameraContainer}>
-        <CameraView
+        <Camera
           ref={cameraRef}
           style={styles.camera}
-          facing="back"
+          type={CameraType.back}
         >
           <View style={[styles.cameraOverlay, { paddingTop: insets.top }]}>
             <TouchableOpacity style={styles.closeButton} onPress={() => setShowCamera(false)}>
@@ -128,7 +128,7 @@ export default function ScanScreen() {
               <View style={styles.captureButtonInner} />
             </TouchableOpacity>
           </View>
-        </CameraView>
+        </Camera>
       </View>
     );
   }
