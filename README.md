@@ -2,7 +2,6 @@
 
 A mobile app for pharmaceutical distributors and pharmacy staff to scan invoices, extract structured data via AI, track product expiry dates, and generate billing reports.
 
-**Live demo:** https://invoice-snap-xi.vercel.app
 
 ---
 
