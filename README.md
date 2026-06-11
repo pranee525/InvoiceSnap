@@ -165,4 +165,4 @@ Each scanned invoice stores:
 
 ## License
 
-Not specified. Contact the repository owner for usage terms.# Here are your Instructions
+Not specified. Contact the repository owner for usage terms.
